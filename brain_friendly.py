@@ -11,9 +11,9 @@ def eval_program(program_string, index, array):
         # Python doesn't have switch statements?
         if command == "+":
             # Cells are signed 8-bit values
-            increment_command(array[index])
+            array[index] = increment_command(array[index])
         elif command == "-":
-            decrement_command(array[index])
+            array[index] = decrement_command(array[index])
         elif command == ">":
             index += 1
         elif command == "<":
