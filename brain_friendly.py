@@ -2,11 +2,11 @@
 bf_program_string = "+>+>+>+>++>>-->>++<--<<<<++++++--"
 # Current pointer location.
 bf_index = 0
-# Array of byte cells (currently 50).
-bf_array = [0]*50
+# Array of byte cells (currently 30,000).
+bf_array = [0]*30000
 
 
-def parse_program(program_string, index, array):
+def eval_program(program_string, index, array):
     for command in program_string:
         # Python doesn't have switch statements?
         if command == "+":
@@ -23,4 +23,4 @@ def parse_program(program_string, index, array):
                 index -= 1
     return array
 
-print(parse_program(bf_program_string, bf_index, bf_array))
+print(eval_program(bf_program_string, bf_index, bf_array))
