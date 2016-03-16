@@ -11,15 +11,9 @@ def eval_program(program_string, index, array):
         # Python doesn't have switch statements?
         if command == "+":
             # Cells are signed 8-bit values
-            if array[index] == 127:
-                array[index] = -128
-            else:
-                array[index] += 1
+            increment_command(array[index])
         elif command == "-":
-            if array[index] == -128:
-                array[index] = 127
-            else:
-                array[index] -= 1
+            decrement_command(array[index])
         elif command == ">":
             index += 1
         elif command == "<":
@@ -29,6 +23,18 @@ def eval_program(program_string, index, array):
             else:
                 index -= 1
     return array
+
+def increment_command(value):
+    if value == 127:
+        return -128
+    else:
+        return value + 1
+
+def decrement_command(value):
+    if value == -128:
+        return 127
+    else:
+        return value - 1
 
 bf_array[0] = 127 # This is to show an example of cell-wrapping.
 bf_array[1] = -128
