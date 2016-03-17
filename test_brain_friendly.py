@@ -1,7 +1,7 @@
 import brain_friendly
 from brain_friendly import eval_program
 
-import StringIO
+import io
 
 
 def test_plus():
@@ -36,27 +36,27 @@ def test_output():
     eval_program('.', 0, [0])
     eval_program('.', 0, [0], output=None)
 
-    output = StringIO.StringIO()
+    output = io.BytesIO()
     eval_program('.', 0, [0], output=output)
     output.seek(0)
-    assert output.read() == '\0'
+    assert output.read() == b'\0'
 
     # You can print multiple times from the same location
-    output = StringIO.StringIO()
+    output = io.BytesIO()
     eval_program('..', 0, [0], output=output)
     output.seek(0)
-    assert output.read() == '\0\0'
+    assert output.read() == b'\0\0'
 
-    output = StringIO.StringIO()
+    output = io.BytesIO()
     eval_program('.+.', 0, [0], output=output)
     output.seek(0)
-    assert output.read() == '\x00\x01'
+    assert output.read() == b'\x00\x01'
 
     # Output should be in the range [0, 255]
-    output = StringIO.StringIO()
+    output = io.BytesIO()
     eval_program('-.', 0, [0], output=output)
     output.seek(0)
-    assert output.read() == '\xFF'
+    assert output.read() == b'\xFF'
 
 
 def test_input():
@@ -64,28 +64,28 @@ def test_input():
     eval_program(',', 0, [0])
     eval_program(',', 0, [0], input=None)
 
-    input = StringIO.StringIO('h')
+    input = io.BytesIO(b'h')
     assert eval_program(',', 0, [0], input=input) == [ord('h')]
 
     # Not consuming the whole buffer should be safe
-    input = StringIO.StringIO('hello')
+    input = io.BytesIO(b'hello')
     assert eval_program(',', 0, [0], input=input) == [ord('h')]
 
     # Repeatedly reading should override
-    input = StringIO.StringIO('hello')
+    input = io.BytesIO(b'hello')
     assert eval_program(',,,,,', 0, [0], input=input) == [ord('o')]
 
-    input = StringIO.StringIO('hello')
+    input = io.BytesIO(b'hello')
     value = eval_program(',>,>,>,>,', 0, [0]*5, input=input)
     assert value == [ord(c) for c in 'hello']
 
     # Input:  [0, 1, ..., 127,  128,  129, ..., 255]
     # Stored: [0, 1, ..., 127, -128, -127, ...,  -1]
-    input = StringIO.StringIO(chr(127))
+    input = io.BytesIO(bytearray([127]))
     assert eval_program(',', 0, [0], input=input) == [127]
 
-    input = StringIO.StringIO(chr(128))
+    input = io.BytesIO(bytearray([128]))
     assert eval_program(',', 0, [0], input=input) == [-128]
 
-    input = StringIO.StringIO(chr(255))
+    input = io.BytesIO(bytearray([255]))
     assert eval_program(',', 0, [0], input=input) == [-1]
