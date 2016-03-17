@@ -57,3 +57,35 @@ def test_output():
     eval_program('-.', 0, [0], output=output)
     output.seek(0)
     assert output.read() == '\xFF'
+
+
+def test_input():
+    # Passing no input should work fine
+    eval_program(',', 0, [0])
+    eval_program(',', 0, [0], input=None)
+
+    input = StringIO.StringIO('h')
+    assert eval_program(',', 0, [0], input=input) == [ord('h')]
+
+    # Not consuming the whole buffer should be safe
+    input = StringIO.StringIO('hello')
+    assert eval_program(',', 0, [0], input=input) == [ord('h')]
+
+    # Repeatedly reading should override
+    input = StringIO.StringIO('hello')
+    assert eval_program(',,,,,', 0, [0], input=input) == [ord('o')]
+
+    input = StringIO.StringIO('hello')
+    value = eval_program(',>,>,>,>,', 0, [0]*5, input=input)
+    assert value == [ord(c) for c in 'hello']
+
+    # Input:  [0, 1, ..., 127,  128,  129, ..., 255]
+    # Stored: [0, 1, ..., 127, -128, -127, ...,  -1]
+    input = StringIO.StringIO(chr(127))
+    assert eval_program(',', 0, [0], input=input) == [127]
+
+    input = StringIO.StringIO(chr(128))
+    assert eval_program(',', 0, [0], input=input) == [-128]
+
+    input = StringIO.StringIO(chr(255))
+    assert eval_program(',', 0, [0], input=input) == [-1]

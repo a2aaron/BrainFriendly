@@ -6,7 +6,7 @@ bf_index = 0
 bf_array = [0]*30000
 
 
-def eval_program(program_string, index, array, output=None):
+def eval_program(program_string, index, array, input=None, output=None):
     for command in program_string:
         if command == "+":
             array[index] = increment_command(array[index])
@@ -22,6 +22,13 @@ def eval_program(program_string, index, array, output=None):
             if output:
                 # The output byte must be in range(256)
                 output.write(chr(array[index] % 256))
+        elif command == ',':
+            if input:
+                array[index] = ord(input.read(1))
+                # The internal bytes are in the range [-128, 127].
+                # This sends 128 -> -128, and 255 -> -1
+                if array[index] > 127:
+                    array[index] -= 256
     return array
 
 
