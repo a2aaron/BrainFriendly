@@ -6,10 +6,9 @@ bf_index = 0
 bf_array = [0]*30000
 
 
-def eval_program(program_string, index, array):
+def eval_program(program_string, index, array, output=None):
     for command in program_string:
         if command == "+":
-            # Cells are signed 8-bit values
             array[index] = increment_command(array[index])
         elif command == "-":
             array[index] = decrement_command(array[index])
@@ -19,6 +18,10 @@ def eval_program(program_string, index, array):
         elif command == "<":
             if index > 0:
                 index -= 1
+        elif command == ".":
+            if output:
+                # The output byte must be in range(256)
+                output.write(chr(array[index] % 256))
     return array
 
 
