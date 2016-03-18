@@ -89,3 +89,15 @@ def test_input():
 
     input = io.BytesIO(bytearray([255]))
     assert eval_program(',', 0, [0], input=input) == [-1]
+
+
+def test_io_roundtrip():
+    for byte in range(256):
+        input = io.BytesIO(bytearray([byte]))
+        output = io.BytesIO()
+        value = eval_program(',.', 0, [0], input=input, output=output)
+        if byte < 128:
+            assert value == [byte]
+        else:
+            assert value == [byte - 256]
+        assert input.getvalue() == output.getvalue()

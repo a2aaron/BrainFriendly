@@ -21,7 +21,7 @@ def eval_program(program_string, index, array, input=None, output=None):
         elif command == ".":
             if output:
                 # The output byte must be in range(256)
-                output.write(chr(array[index] % 256))
+                output.write(bytearray([array[index] % 256]))
         elif command == ',':
             if input:
                 array[index] = ord(input.read(1))
