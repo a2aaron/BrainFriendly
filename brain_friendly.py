@@ -6,8 +6,12 @@ bf_index = 0
 bf_array = [0]*30000
 
 
-def eval_program(program_string, index, array):
-    for command in program_string:
+def eval_program(program, index, array):
+    program_index = 0
+    # Stack for "[" and "]" commands.
+    bracket_stack = list()
+    while program_index != len(program):
+        command = program[program_index]
         if command == "+":
             # Cells are signed 8-bit values
             array[index] = increment_command(array[index])
@@ -19,6 +23,34 @@ def eval_program(program_string, index, array):
         elif command == "<":
             if index > 0:
                 index -= 1
+        elif command == "[":
+            # "[" jumps past the matching "[" if the current cell is 0.
+
+            # Pushing this is fine even if the current cell is 0
+            # Because it will be poped when we jump to the "]"
+            bracket_stack.append(program_index)
+
+            # Search for next "]"
+            if array[index] == 0:
+                bracket_count = 0
+                while bracket_count != -1 :
+                    program_index += 1
+                    if program[program_index] == "[":
+                        bracket_count += 1
+                    elif program[program_index] == "]":
+                        bracket_count -= 1
+                    
+        elif command == "]":
+            # "]" jumps back to the matching "[" if the current cell is NOT 0
+            if array[index] != 0:
+                #Go to matching "["
+                program_index = bracket_stack[-1]
+            else:
+                # Fall out of loop, pop matching "["
+                bracket_stack.pop()
+        # Next command
+        program_index += 1
+
     return array
 
 
