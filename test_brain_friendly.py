@@ -1,5 +1,7 @@
+import pytest
 import brain_friendly
 from brain_friendly import eval_program
+from brain_friendly import get_brace_matches
 
 import io
 
@@ -155,3 +157,26 @@ def test_io_roundtrip():
         else:
             assert value == [byte - 256]
         assert input.getvalue() == output.getvalue()
+
+# Test brace matching
+def test_trival_braces():
+    assert get_brace_matches("") == dict() 
+    assert get_brace_matches("+-><") == dict()
+    assert get_brace_matches("[]") == {0: 1}
+    assert get_brace_matches("[+-><]") == {0: 5}
+    assert get_brace_matches("[[]]") == {0: 3, 1: 2}
+    assert get_brace_matches("[][]") == {0: 1, 2: 3}
+    assert get_brace_matches("[[][]]") == {0: 5, 1: 2, 3: 4}
+
+def test_invalid_braces():
+    # This seems to be the only way to test if multiple expressions raise errors.
+    with pytest.raises(ValueError):
+        get_brace_matches("[")
+    with pytest.raises(ValueError):
+        get_brace_matches("[[")
+    with pytest.raises(ValueError):
+        get_brace_matches("]")
+    with pytest.raises(ValueError):
+        get_brace_matches("]]")
+    with pytest.raises(ValueError):
+        get_brace_matches("][")

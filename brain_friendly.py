@@ -5,7 +5,6 @@ bf_index = 0
 # Array of byte cells (currently 30,000).
 bf_array = [0]*30000
 
-
 def eval_program(program, index, array, input=None, output=None):
     program_index = 0
     # Stack for "[" and "]" commands.
@@ -76,6 +75,27 @@ def decrement_command(value):
     else:
         return value - 1
 
+def get_brace_matches(program):
+    '''
+    Returns a dictionary.
+    The keys are the index of a "[" and the values are the index of a "]".
+    If the program is malformed, then ValueError is raised.
+    '''
+    brace_dict = dict()
+    brace_stack = list()
+
+    for index in range(len(program)):
+        if program[index] == "[":
+            brace_stack.append(index)
+        elif program[index] == "]":
+            if len(brace_stack) == 0: #sanity check
+                raise ValueError("Malformed BF program (too many \"]\"s)")
+            brace_dict[brace_stack.pop()] = index
+
+    if len(brace_stack) == 0: #sanity check
+        return brace_dict
+    else:
+        raise ValueError("Malformed BF program (too many \"[\"s)")
 
 if __name__ == '__main__':
     bf_array = eval_program(bf_program_string, bf_index, bf_array)
