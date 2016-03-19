@@ -41,11 +41,7 @@ def eval_program(program, index, array, input=None, output=None):
         elif command == "]":
             # "]" jumps back to the matching "[" if the current cell is NOT 0
             if array[index] != 0:
-                #Go to matching "["
-                for left, right in brace_dict.iteritems():
-                    if right == program_index:
-                        program_index = left
-
+                program_index = brace_dict[program_index]
         # Next command
         program_index += 1                    
     return array
@@ -66,8 +62,7 @@ def decrement_command(value):
 
 def get_brace_matches(program):
     '''
-    Returns a dictionary.
-    The keys are the index of a "[" and the values are the index of a "]".
+    Returns a dictionary containing the pairs for left and right brace indexes.
     If the program is malformed, then ValueError is raised.
     '''
     brace_dict = dict()
@@ -79,7 +74,10 @@ def get_brace_matches(program):
         elif program[index] == "]":
             if len(brace_stack) == 0: #sanity check
                 raise ValueError("Malformed BF program (too many \"]\"s)")
-            brace_dict[brace_stack.pop()] = index
+            left_index = brace_stack.pop()
+            #add left AND right brace pairs.
+            brace_dict[left_index] = index
+            brace_dict[index] = left_index
 
     if len(brace_stack) == 0: #sanity check
         return brace_dict
