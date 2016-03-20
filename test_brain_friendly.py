@@ -182,3 +182,29 @@ def test_invalid_braces():
     for test_case in test_cases:
         with pytest.raises(ValueError):
             get_brace_matches(test_case)
+
+
+# Full program testing
+def test_hello_world():
+    program = ('++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]'
+               '>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.')
+    output = io.BytesIO()
+    eval_program(program, 0, [0]*100, output=output)
+    assert output.getvalue() == b'Hello World!\n'
+
+    program = ('>++++++++[-<+++++++++>]<.>>+>-[+]++>++>+++[>[->+++<<+++>]<<]'
+               '>-----.>->+++..+++.>-.<<+[>[+>+]>>]<--------------.>>.+++.'
+               '------.--------.>+.>+.')
+    output = io.BytesIO()
+    eval_program(program, 0, [0]*100, output=output)
+    assert output.getvalue() == b'Hello World!\n'
+
+    # http://codegolf.stackexchange.com/questions/55422/hello-world/68494#68494
+    program = ('--->->->>+>+>>+[++++[>+++[>++++>-->+++<<<-]<-]<+++]'
+               '>>>.>-->-.>..+>++++>+++.+>-->[>-.<<]')
+    output = io.BytesIO()
+    eval_program(program, 0, [0]*100, output=output)
+    assert output.getvalue() == b'Hello, World!'
+
+    # Visit the following link to find items that will fail non-wrapping, etc.
+    # http://codegolf.stackexchange.com/questions/55422/hello-world/68494#68494
