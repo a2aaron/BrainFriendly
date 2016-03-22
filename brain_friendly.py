@@ -1,3 +1,4 @@
+import io
 # The input BF program.
 bf_program_string = '[][]'
 # Current pointer location.
@@ -85,6 +86,18 @@ def get_brace_matches(program):
     else:
         return brace_pairs
 
+
+def eval_file(filename, index, memory, input=None, output=None):
+    f = open(filename, 'r')
+    program = f.read()
+    f.close()
+    return eval_program(program, index, memory, input, output)
+
+
 if __name__ == '__main__':
-    bf_memory = eval_program(bf_program_string, bf_index, bf_memory)
-    print(bf_memory[:10])
+    filename = "test_programs/bottles_of_beer.bf"
+    output = io.BytesIO()
+    bf_memory = eval_file(filename, bf_index, bf_memory, output=output)
+    output.seek(0)
+    for line in output:
+        print(line)
