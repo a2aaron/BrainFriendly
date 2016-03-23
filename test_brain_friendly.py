@@ -2,7 +2,8 @@ import brain_friendly
 from brain_friendly import eval_program, eval_file, get_brace_matches
 
 import pytest
-import io, sys
+import io
+import sys
 
 
 # Tests for "+", "-", ">", and "<"
@@ -275,12 +276,5 @@ def test_bottles_of_beer_file():
     output = io.BytesIO()
     eval_file('test_programs/bottles_of_beer.bf', 0, [0]*30000, output=output)
     output.seek(0)
-    with open('test_programs/bottles_output.txt', 'r') as f:
-        # In Python 2, bytes aliases to str, but it does not in Python 3
-        # Also, in Python 2, readline reads as raw litterals,
-        # but Python 3 tries to escape backslashes. This causes tests to fail
-        # if this isn't accounted for.
-        if sys.version_info >= (3, 0):  # Python 3
-            assert bytes(f.readline(), "ascii") == output.readline()
-        else:  # Python 2
-            f.readline() == output.readline()
+    with open('test_programs/bottles_output.txt', 'rb') as f:
+        f.readline() == output.readline()
