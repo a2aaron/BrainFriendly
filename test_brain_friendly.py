@@ -6,7 +6,7 @@ import io
 import sys
 
 
-# Tests for "+", "-", ">", and "<"
+# Tests for '+', '-', '>', and '<'
 def test_plus():
     assert eval_program('+', 0, [0]) == [1]
     assert eval_program('+++++', 0, [0]) == [5]
@@ -34,7 +34,7 @@ def test_saturate_buffer():
     assert eval_program('<<<>+', 0, [0]*3) == [0, 1, 0]
 
 
-# Tests for "[" and "]"
+# Tests for '[' and ']'
 def test_trivial_loops():
     # Since the current cell is zero.
     # All of these loops should exit immediately
@@ -51,11 +51,11 @@ def test_simple_loops():
     assert eval_program('+++>[]', 0, [0, 0]) == [3, 0]
     assert eval_program('[]>++', 0, [0, 0]) == [0, 2]
 
-    # "Copy value" program.
+    # 'Copy value' program.
     # Copies the current cell's value into the next two cells
     assert eval_program('[>+>+<<-]', 1, [0, 3, 0, 0]) == [0, 0, 3, 3]
 
-    # "Move value" program.
+    # 'Move value' program.
     # Moves the current cell two cells right.
     assert eval_program('>>[-]<<[->>+<<]', 0, [5, 0, 0]) == [0, 0, 5]
 
@@ -78,20 +78,20 @@ def test_set_zero():
 
 
 def test_nested_loops():
-    # Modified "hello world" program (without I/O). Taken from Esolang Wiki
+    # Modified 'hello world' program (without I/O). Taken from Esolang Wiki
     # Does not print anything and is a truncated program.
     # https://esolangs.org/wiki/Brainfuck#Examples
     program = '++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]'
     assert eval_program(program, 0, [0]*7) == [0, 0, 72, 104, 88, 32, 8]
 
-    # Slightly modified "multiplication" program. Taken from StackOverflow
+    # Slightly modified 'multiplication' program. Taken from StackOverflow
     # Takes two numbers in cell 0 and 1 and outputs their product in cell 2.
     # http://stackoverflow.com/a/26708313
     program2 = '[>[->+>+<<]>>[-<<+>>]<<<-]>[-]'
     assert eval_program(program2, 0, [3, 5, 0, 0]) == [0, 0, 15, 0]
 
 
-# Tests for "." and ","
+# Tests for '.' and ','
 def test_output():
     # Passing no output should work fine
     eval_program('.', 0, [0])
@@ -187,79 +187,28 @@ def test_invalid_braces():
 
 # Full program testing
 def test_hello_world():
-    program = ('++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]'
-               '>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.')
-    output = io.BytesIO()
-    eval_program(program, 0, [0]*100, output=output)
-    assert output.getvalue() == b'Hello World!\n'
+    prefix = 'test_programs/hello_world/hello_world'
+    suffixes = ['_commented.bf', '_no_comma.bf',
+    '_no_comma2.bf', '_lowercase.bf', '_no_newline.bf']
+    filenames = [prefix+suffix for suffix in suffixes]
+    # Not all of these are the same.
+    file_outputs = [b'Hello World!\n', b'Hello World!\n',
+                    b'Hello World!\n', b'hello world', b'Hello, World!']
 
-    program = ('>++++++++[-<+++++++++>]<.>>+>-[+]++>++>+++[>[->+++<<+++>]<<]'
-               '>-----.>->+++..+++.>-.<<+[>[+>+]>>]<--------------.>>.+++.'
-               '------.--------.>+.>+.')
-    output = io.BytesIO()
-    eval_program(program, 0, [0]*100, output=output)
-    assert output.getvalue() == b'Hello World!\n'
-
-    # http://codegolf.stackexchange.com/questions/55422/hello-world/68494#68494
-    program = ('--->->->>+>+>>+[++++[>+++[>++++>-->+++<<<-]<-]<+++]'
-               '>>>.>-->-.>..+>++++>+++.+>-->[>-.<<]')
-    output = io.BytesIO()
-    eval_program(program, 0, [0]*100, output=output)
-    assert output.getvalue() == b'Hello, World!'
-
-    program = '''\
-+++++ +++               Set Cell #0 to 8
-[
-    >++++               Add 4 to Cell #1; this will always set Cell #1 to 4
-    [                   as the cell will be cleared by the loop
-        >++             Add 4*2 to Cell #2
-        >+++            Add 4*3 to Cell #3
-        >+++            Add 4*3 to Cell #4
-        >+              Add 4 to Cell #5
-        <<<<-           Decrement the loop counter in Cell #1
-    ]                   Loop till Cell #1 is zero
-    >+                  Add 1 to Cell #2
-    >+                  Add 1 to Cell #3
-    >-                  Subtract 1 from Cell #4
-    >>+                 Add 1 to Cell #6
-    [<]                 Move back to the first zero cell you find; this will
-                        be Cell #1 which was cleared by the previous loop
-    <-                  Decrement the loop Counter in Cell #0
-]                       Loop till Cell #0 is zero
-
-The result of this is:
-Cell No :   0   1   2   3   4   5   6
-Contents:   0   0  72 104  88  32   8
-Pointer :   ^
-
->>.                     Cell #2 has value 72 which is 'H'
->---.                   Subtract 3 from Cell #3 to get 101 which is 'e'
-+++++ ++..+++.          Likewise for 'llo' from Cell #3
->>.                     Cell #5 is 32 for the space
-<-.                     Subtract 1 from Cell #4 for 87 to give a 'W'
-<.                      Cell #3 was set to 'o' from the end of 'Hello'
-+++.----- -.----- ---.  Cell #3 for 'rl' and 'd'
->>+.                    Add 1 to Cell #5 gives us an exclamation point
->++.                    And finally a newline from Cell #6'''
-    output = io.BytesIO()
-    eval_program(program, 0, [0]*100, output=output)
-    assert output.getvalue() == b'Hello World!\n'
+    for (filename, file_output) in zip(filenames, file_outputs):
+        output = io.BytesIO()
+        eval_file(filename, 0, [0]*100, output=output)
+        output.seek(0)
+        assert output.getvalue() == file_output
 
     # Visit the following link to find items that will fail non-wrapping, etc.
     # http://codegolf.stackexchange.com/questions/55422/hello-world/68494#68494
 
 
 # Test reading from a file
-def test_hello_world_file():
-    output = io.BytesIO()
-    eval_file('test_programs/hello_world.bf', 0, [0]*10, output=output)
-    output.seek(0)
-    assert output.read() == b'Hello World!\n'
-
 
 def test_multiply_file():
     assert eval_file('test_programs/multiply.bf', 0, [3, 5, 0, 0]) == [0, 0, 15, 0]
-
 
 def test_squares_file():
     # Output is a sequence of square numbers between 0 and 10000 with a newline

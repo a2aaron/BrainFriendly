@@ -95,9 +95,8 @@ def eval_file(filename, index, memory, input=None, output=None):
 
 
 if __name__ == '__main__':
-    filename = "test_programs/bottles_of_beer.bf"
+    filename = "test_programs/hello_world/hello_world_commented.bf"
     output = io.BytesIO()
     bf_memory = eval_file(filename, bf_index, bf_memory, output=output)
     output.seek(0)
-    for line in output:
-        print(line)
+    print(output.getvalue())
