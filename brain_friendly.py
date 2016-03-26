@@ -94,10 +94,19 @@ def eval_file(filename, index, memory, input=None, output=None):
         return eval_program(program, index, memory, input, output)
 
 
-if __name__ == '__main__':
-    filename = "test_programs/bottles_of_beer.bf"
+def eval_stdin():
+    # TODO: write tests
+    # TODO: implement eof changes
+    # (EOF = 0, -1 or no change)
+    # programs to look at:
+    # http://www.brain------------------------------------------------------fuck.com/programs.html
     try:
         output = sys.stdout.buffer  # Python 3
     except AttributeError:
         output = sys.stdout  # Python 2
-    eval_file(filename, bf_index, bf_memory, output=output)
+    print("Type a BF program.")
+    program = sys.stdin.read()
+    print("Type your program input.")
+    eval_program(program, bf_index, bf_memory, sys.stdin, output)
+if __name__ == '__main__':
+    eval_stdin()
