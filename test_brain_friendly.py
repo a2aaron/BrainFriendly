@@ -2,6 +2,7 @@ import brain_friendly
 from brain_friendly import eval_program, eval_file, get_brace_matches
 
 import pytest
+import os
 import io
 import sys
 
@@ -187,17 +188,16 @@ def test_invalid_braces():
 
 # Full program testing
 def test_hello_world():
-    prefix = 'test_programs/hello_world/hello_world'
-    suffixes = ['_commented.bf', '_no_comma.bf',
-    '_no_comma2.bf', '_lowercase.bf', '_no_newline.bf']
-    filenames = [prefix+suffix for suffix in suffixes]
-    # Not all of these are the same.
-    file_outputs = [b'Hello World!\n', b'Hello World!\n',
-                    b'Hello World!\n', b'hello world', b'Hello, World!']
-
-    for (filename, file_output) in zip(filenames, file_outputs):
+    prefix = 'test_programs/hello_world/'
+    test_cases = [('commented.bf',  b'Hello World!\n'),
+                  ('no_comma.bf',   b'Hello World!\n'),
+                  ('no_comma2.bf',  b'Hello World!\n'),
+                  ('lowercase.bf',  b'hello world'),
+                  ('no_newline.bf', b'Hello, World!')]
+    for filename, file_output in test_cases:
+        filepath = os.path.join(prefix, filename)
         output = io.BytesIO()
-        eval_file(filename, 0, [0]*100, output=output)
+        eval_file(filepath, 0, [0]*100, output=output)
         output.seek(0)
         assert output.getvalue() == file_output
 
@@ -209,6 +209,7 @@ def test_hello_world():
 
 def test_multiply_file():
     assert eval_file('test_programs/multiply.bf', 0, [3, 5, 0, 0]) == [0, 0, 15, 0]
+
 
 def test_squares_file():
     # Output is a sequence of square numbers between 0 and 10000 with a newline
