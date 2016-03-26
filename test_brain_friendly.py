@@ -206,9 +206,18 @@ def test_hello_world():
 
 
 # Test reading from a file
+def test_empty_file():
+    assert eval_file('test_programs/empty.bf', 0, [0]) == [0]
+
+
+def test_simple_file():
+    output = [1, 2, 3, -2, 1]  # This is so pep8 doesn't yell at me.
+    assert eval_file('test_programs/simple.bf', 0, [0]*5) == output
+
 
 def test_multiply_file():
-    assert eval_file('test_programs/multiply.bf', 0, [3, 5, 0, 0]) == [0, 0, 15, 0]
+    output = [0, 0, 15, 0]  # This is so pep8 doesn't yell at me.
+    assert eval_file('test_programs/multiply.bf', 0, [3, 5, 0, 0]) == output
 
 
 def test_squares_file():

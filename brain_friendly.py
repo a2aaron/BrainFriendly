@@ -89,10 +89,9 @@ def get_brace_matches(program):
 
 
 def eval_file(filename, index, memory, input=None, output=None):
-    f = open(filename, 'r')
-    program = f.read()
-    f.close()
-    return eval_program(program, index, memory, input, output)
+    with open(filename, 'r') as f:
+        program = f.read()
+        return eval_program(program, index, memory, input, output)
 
 
 if __name__ == '__main__':
