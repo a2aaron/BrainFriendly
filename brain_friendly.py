@@ -1,3 +1,4 @@
+import sys
 import io
 # The input BF program.
 bf_program_string = '[][]'
@@ -95,8 +96,9 @@ def eval_file(filename, index, memory, input=None, output=None):
 
 
 if __name__ == '__main__':
-    filename = "test_programs/hello_world/hello_world_commented.bf"
-    output = io.BytesIO()
-    bf_memory = eval_file(filename, bf_index, bf_memory, output=output)
-    output.seek(0)
-    print(output.getvalue())
+    filename = "test_programs/bottles_of_beer.bf"
+    try:
+        output = sys.stdout.buffer  # Python 3
+    except AttributeError:
+        output = sys.stdout  # Python 2
+    eval_file(filename, bf_index, bf_memory, output=output)
