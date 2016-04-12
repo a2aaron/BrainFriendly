@@ -22,17 +22,17 @@ def test_minus():
 
 
 def test_arrows():
-    assert eval_program('>+', 0, [0]*2) == [0, 1]
-    assert eval_program('>>>+', 0, [0]*5) == [0, 0, 0, 1, 0]
-    assert eval_program('><+', 0, [0]*2) == [1, 0]
-    assert eval_program('>><+><<++', 0, [0]*3) == [2, 1, 0]
+    assert eval_program('>+', 0, [0] * 2) == [0, 1]
+    assert eval_program('>>>+', 0, [0] * 5) == [0, 0, 0, 1, 0]
+    assert eval_program('><+', 0, [0] * 2) == [1, 0]
+    assert eval_program('>><+><<++', 0, [0] * 3) == [2, 1, 0]
 
 
 def test_saturate_buffer():
-    assert eval_program('<<<+', 0, [0]*3) == [1, 0, 0]
-    assert eval_program('>>>+', 0, [0]*3) == [0, 0, 1]
-    assert eval_program('>>><+', 0, [0]*3) == [0, 1, 0]
-    assert eval_program('<<<>+', 0, [0]*3) == [0, 1, 0]
+    assert eval_program('<<<+', 0, [0] * 3) == [1, 0, 0]
+    assert eval_program('>>>+', 0, [0] * 3) == [0, 0, 1]
+    assert eval_program('>>><+', 0, [0] * 3) == [0, 1, 0]
+    assert eval_program('<<<>+', 0, [0] * 3) == [0, 1, 0]
 
 
 # Tests for '[' and ']'
@@ -83,7 +83,7 @@ def test_nested_loops():
     # Does not print anything and is a truncated program.
     # https://esolangs.org/wiki/Brainfuck#Examples
     program = '++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]'
-    assert eval_program(program, 0, [0]*7) == [0, 0, 72, 104, 88, 32, 8]
+    assert eval_program(program, 0, [0] * 7) == [0, 0, 72, 104, 88, 32, 8]
 
     # Slightly modified 'multiplication' program. Taken from StackOverflow
     # Takes two numbers in cell 0 and 1 and outputs their product in cell 2.
@@ -138,7 +138,7 @@ def test_input():
     assert eval_program(',,,,,', 0, [0], input=input) == [ord('o')]
 
     input = io.BytesIO(b'hello')
-    value = eval_program(',>,>,>,>,', 0, [0]*5, input=input)
+    value = eval_program(',>,>,>,>,', 0, [0] * 5, input=input)
     assert value == [ord(c) for c in 'hello']
 
     # Input:  [0, 1, ..., 127,  128,  129, ..., 255]
@@ -197,7 +197,7 @@ def test_hello_world():
     for filename, file_output in test_cases:
         filepath = os.path.join(prefix, filename)
         output = io.BytesIO()
-        eval_file(filepath, 0, [0]*100, output=output)
+        eval_file(filepath, 0, [0] * 100, output=output)
         output.seek(0)
         assert output.getvalue() == file_output
 
@@ -212,7 +212,7 @@ def test_empty_file():
 
 def test_simple_file():
     output = [1, 2, 3, -2, 1]  # This is so pep8 doesn't yell at me.
-    assert eval_file('test_programs/simple.bf', 0, [0]*5) == output
+    assert eval_file('test_programs/simple.bf', 0, [0] * 5) == output
 
 
 def test_multiply_file():
@@ -223,7 +223,7 @@ def test_multiply_file():
 def test_squares_file():
     # Output is a sequence of square numbers between 0 and 10000 with a newline
     output = io.BytesIO()
-    eval_file('test_programs/squares.bf', 0, [0]*30000, output=output)
+    eval_file('test_programs/squares.bf', 0, [0] * 30000, output=output)
     output.seek(0)
     x = 0
     while x * x < 10000:
@@ -233,7 +233,8 @@ def test_squares_file():
 
 def test_bottles_of_beer_file():
     output = io.BytesIO()
-    eval_file('test_programs/bottles_of_beer.bf', 0, [0]*30000, output=output)
+    eval_file('test_programs/bottles_of_beer.bf',
+              0, [0] * 30000, output=output)
     output.seek(0)
     with open('test_programs/bottles_output.txt', 'rb') as f:
         f.readline() == output.readline()

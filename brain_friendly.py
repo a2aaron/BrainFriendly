@@ -1,14 +1,15 @@
 import sys
 import io
+
 # The input BF program.
 bf_program_string = '[][]'
 # Current pointer location.
 bf_index = 0
 # Array of byte cells (currently 30,000).
-bf_memory = [0]*30000
+bf_memory = [0] * 30000
 
 
-def eval_program(program, index, memory, input=None, output=None):
+def eval_program(program, index, memory, input=None, output=None, EOF=0):
     program_index = 0
     # Stack for "[" and "]" commands.
     brace_pairs = get_brace_matches(program)
@@ -30,16 +31,22 @@ def eval_program(program, index, memory, input=None, output=None):
                 output.write(bytearray([memory[index] % 256]))
         elif command == ',':
             if input:
-                memory[index] = ord(input.read(1))
-                # The internal bytes are in the range [-128, 127].
-                # This sends 128 -> -128, and 255 -> -1
-                if memory[index] > 127:
-                    memory[index] -= 256
+                try:
+                    memory[index] = ord(input.read(1))
+                    # The internal bytes are in the range [-128, 127].
+                    # This sends 128 -> -128, and 255 -> -1
+                    if memory[index] > 127:
+                        memory[index] -= 256
+                except TypeError:
+                    if EOF is None:
+                        pass
+                    else:
+                        memory[index] = EOF
 
         elif command == '[':
             # "[" jumps past the matching "[" if the current cell is 0.
             if memory[index] == 0:
-                    program_index = brace_pairs[program_index]
+                program_index = brace_pairs[program_index]
 
         elif command == ']':
             # "]" jumps back to the matching "[" if the current cell is NOT 0
@@ -94,19 +101,40 @@ def eval_file(filename, index, memory, input=None, output=None):
         return eval_program(program, index, memory, input, output)
 
 
+def try_parse_int(string):
+    try:
+        return int(string)
+    except ValueError:
+        return None
+
+
 def eval_stdin():
     # TODO: write tests
-    # TODO: implement eof changes
-    # (EOF = 0, -1 or no change)
+    # TODO: instead of asking for input seperately, just use "!".
     # programs to look at:
     # http://www.brain------------------------------------------------------fuck.com/programs.html
-    try:
-        output = sys.stdout.buffer  # Python 3
-    except AttributeError:
-        output = sys.stdout  # Python 2
-    print("Type a BF program.")
-    program = sys.stdin.read()
-    print("Type your program input.")
-    eval_program(program, bf_index, bf_memory, sys.stdin, output)
+
+    program_string = "Type a BF program. Comments are fine"
+    EOF_string = "What should EOF return? (newline for no change on EOF)\n"
+    input_string = "Type your program input.\n"
+
+    # The main reason for the version checking is because
+    # input() tries to execute Python code in Python 2 while
+    # input() is the same as raw_input() in Python 3.
+    if (sys.version_info > (3, 0)):
+        program = input(program_string)
+        EOF = try_parse_int(input(EOF_string))
+        stringIO_input = io.StringIO(input(input_string))
+        output = sys.stdout.buffer
+    else:
+        program = raw_input(program_string)
+        EOF = try_parse_int(raw_input(EOF_string))
+        # Yes, StringIO must be in unicode for Python 2.
+        stringIO_input = io.StringIO(unicode(raw_input(input_string)))
+        output = sys.stdout
+
+    eval_program(program, bf_index, bf_memory, stringIO_input, output, EOF)
+    print("\n")
+
 if __name__ == '__main__':
     eval_stdin()
