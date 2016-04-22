@@ -211,12 +211,12 @@ def test_empty_file():
 
 
 def test_simple_file():
-    output = [1, 2, 3, -2, 1]  # This is so pep8 doesn't yell at me.
+    output = [1, 2, 3, -2, 1]
     assert eval_file('test_programs/simple.bf', 0, [0]*5) == output
 
 
 def test_multiply_file():
-    output = [0, 0, 15, 0]  # This is so pep8 doesn't yell at me.
+    output = [0, 0, 15, 0]
     assert eval_file('test_programs/multiply.bf', 0, [3, 5, 0, 0]) == output
 
 
@@ -225,10 +225,8 @@ def test_squares_file():
     output = io.BytesIO()
     eval_file('test_programs/squares.bf', 0, [0]*30000, output=output)
     output.seek(0)
-    x = 0
-    while x * x < 10000:
-        assert output.readline() == str(x * x).encode('ascii') + b'\n'
-        x += 1
+    for line, x in zip(output.readlines(), range(100)):
+        assert line == str(x * x).encode('ascii') + b'\n'
 
 
 def test_bottles_of_beer_file():
@@ -237,3 +235,12 @@ def test_bottles_of_beer_file():
     output.seek(0)
     with open('test_programs/bottles_output.txt', 'rb') as f:
         f.readline() == output.readline()
+
+
+def test_frontend():
+    output = io.BytesIO()
+    sys.stdout = output
+    brain_friendly.main(['hello', 'test_programs/squares.bf'])
+    output.seek(0)
+    for line, x in zip(output.readlines(), range(100)):
+        assert line == str(x * x).encode('ascii') + b'\n'

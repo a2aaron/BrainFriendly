@@ -1,11 +1,5 @@
 import sys
 import io
-# The input BF program.
-bf_program_string = '[][]'
-# Current pointer location.
-bf_index = 0
-# Array of byte cells (currently 30,000).
-bf_memory = [0]*30000
 
 
 def eval_program(program, index, memory, input=None, output=None):
@@ -89,15 +83,29 @@ def get_brace_matches(program):
 
 
 def eval_file(filename, index, memory, input=None, output=None):
-    with open(filename, 'r') as f:
-        program = f.read()
-        return eval_program(program, index, memory, input, output)
+    if filename == '-':
+        program = sys.stdin.read().encode('utf8')
+    else:
+        with open(filename, 'r') as f:
+            program = f.read()
+
+    return eval_program(program, index, memory, input, output)
 
 
-if __name__ == '__main__':
-    filename = "test_programs/bottles_of_beer.bf"
+def main(args):
+    if len(args) > 1:
+        filename = args[1]
+    else:
+        filename = '-'  # Represents stdin
+
     try:
         output = sys.stdout.buffer  # Python 3
     except AttributeError:
         output = sys.stdout  # Python 2
-    eval_file(filename, bf_index, bf_memory, output=output)
+    # Array of byte cells (currently 30,000).
+    bf_memory = [0]*30000
+    eval_file(filename, 0, bf_memory, output=output)
+
+
+if __name__ == '__main__':
+    main(sys.argv)
