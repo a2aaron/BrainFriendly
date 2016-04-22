@@ -84,10 +84,13 @@ def get_brace_matches(program):
 
 def eval_file(filename, index, memory, input=None, output=None):
     if filename == '-':
-        program = sys.stdin.read().encode('utf8')
+        program = sys.stdin.read().encode('utf8').split('!')
+        input = io.BytesIO(b'!'.join(program[1:]))
+        program = program[0]
     else:
         with open(filename, 'r') as f:
             program = f.read()
+        input = sys.stdin
 
     return eval_program(program, index, memory, input, output)
 
@@ -104,7 +107,7 @@ def main(args):
         output = sys.stdout  # Python 2
     # Array of byte cells (currently 30,000).
     bf_memory = [0]*30000
-    eval_file(filename, 0, bf_memory, output=output)
+    return eval_file(filename, 0, bf_memory, output=output)
 
 
 if __name__ == '__main__':

@@ -244,3 +244,8 @@ def test_frontend():
     output.seek(0)
     for line, x in zip(output.readlines(), range(100)):
         assert line == str(x * x).encode('ascii') + b'\n'
+
+    output = io.BytesIO()
+    sys.stdout = output
+    sys.stdin = io.BytesIO(b',!!')
+    assert brain_friendly.main(['hello', '-'])[0:2] == [ord('!'), 0]
