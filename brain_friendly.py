@@ -4,7 +4,7 @@ import io
 bf_program_string = '[][]'
 # Current pointer location.
 bf_index = 0
-# Array of byte cells (currently 30,000).
+# Array of byte cells (currently 30,000 but can expand with program).
 bf_memory = [0]*30000
 
 
@@ -19,8 +19,13 @@ def eval_program(program, index, memory, input=None, output=None):
         elif command == '-':
             memory[index] = decrement_command(memory[index])
         elif command == '>':
-            if index + 1 < len(memory):
-                index += 1
+            index += 1
+            # Expand the memory buffer if we hit memory limits
+            # Most normal sized programs should not hit this,
+            # but very large ones might.
+            if index >= len(memory):
+                # Add at least one memory cell
+                memory.extend([0]*(1 + index - len(memory)))
         elif command == '<':
             if index > 0:
                 index -= 1
@@ -46,6 +51,7 @@ def eval_program(program, index, memory, input=None, output=None):
             if memory[index] != 0:
                 program_index = brace_pairs[program_index]
         program_index += 1  # Next command
+        print(memory)
     return memory
 
 
@@ -101,3 +107,4 @@ if __name__ == '__main__':
     except AttributeError:
         output = sys.stdout  # Python 2
     eval_file(filename, bf_index, bf_memory, output=output)
+
