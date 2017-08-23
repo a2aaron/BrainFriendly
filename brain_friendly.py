@@ -9,6 +9,7 @@ bf_memory = [0]*30000
 
 
 def eval_program(program, index, memory, input=None, output=None):
+    steps = 0
     program_index = 0
     # Stack for "[" and "]" commands.
     brace_pairs = get_brace_matches(program)
@@ -51,7 +52,8 @@ def eval_program(program, index, memory, input=None, output=None):
             if memory[index] != 0:
                 program_index = brace_pairs[program_index]
         program_index += 1  # Next command
-        print(memory)
+        steps += 1
+        print("({}) {}: {}".format(command, steps, memory))
     return memory
 
 
@@ -106,5 +108,6 @@ if __name__ == '__main__':
         output = sys.stdout.buffer  # Python 3
     except AttributeError:
         output = sys.stdout  # Python 2
-    eval_file(filename, bf_index, bf_memory, output=output)
+    # eval_file(filename, bf_index, bf_memory, output=output)
+    eval_program("-[>-[>-[-[>+<-]<[>+<-]<[>+<-]>>>]<-]<-]", bf_index, [0]*10, output=output)
 
