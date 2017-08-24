@@ -28,12 +28,15 @@ def test_arrows():
     assert eval_program('>><+><<++', 0, [0]*3) == [2, 1, 0]
 
 
-def test_saturate_buffer():
+def test_left_saturate_buffer():
     assert eval_program('<<<+', 0, [0]*3) == [1, 0, 0]
-    assert eval_program('>>>+', 0, [0]*3) == [0, 0, 1]
-    assert eval_program('>>><+', 0, [0]*3) == [0, 1, 0]
     assert eval_program('<<<>+', 0, [0]*3) == [0, 1, 0]
 
+
+def test_right_expands_buffer():
+    assert eval_program('>>>', 0, [0]) == [0, 0, 0, 0]
+    assert eval_program('>>>+', 0, [0]) == [0, 0, 0, 1]
+    assert eval_program('>>><+', 0, [0]) == [0, 0, 1, 0]
 
 # Tests for '[' and ']'
 def test_trivial_loops():

@@ -18,8 +18,13 @@ def eval_program(program, index, memory, input=None, output=None):
         elif command == '-' or command == ord('-'):
             memory[index] = decrement_command(memory[index])
         elif command == '>' or command == ord('>'):
-            if index + 1 < len(memory):
-                index += 1
+            index += 1
+            # Expand the memory buffer if we hit memory limits
+            # Most normal sized programs should not hit this,
+            # but very large ones might.
+            if index >= len(memory):
+                # Add at least one memory cell
+                memory.extend([0]*(1 + index - len(memory)))
         elif command == '<' or command == ord('<'):
             if index > 0:
                 index -= 1
