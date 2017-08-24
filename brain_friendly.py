@@ -1,6 +1,11 @@
 import sys
 import io
 
+try:
+    _ = unicode
+except:
+    unicode = str
+
 
 def eval_program(program, index, memory, input=None, output=None):
     program_index = 0
@@ -8,21 +13,21 @@ def eval_program(program, index, memory, input=None, output=None):
     brace_pairs = get_brace_matches(program)
     while program_index < len(program):
         command = program[program_index]
-        if command == '+':
+        if command == '+' or command == ord('+'):
             memory[index] = increment_command(memory[index])
-        elif command == '-':
+        elif command == '-' or command == ord('-'):
             memory[index] = decrement_command(memory[index])
-        elif command == '>':
+        elif command == '>' or command == ord('>'):
             if index + 1 < len(memory):
                 index += 1
-        elif command == '<':
+        elif command == '<' or command == ord('<'):
             if index > 0:
                 index -= 1
-        elif command == '.':
+        elif command == '.' or command == ord('.'):
             if output:
                 # The output byte must be in range(256)
                 output.write(bytearray([memory[index] % 256]))
-        elif command == ',':
+        elif command == ',' or command == ord(','):
             if input:
                 memory[index] = ord(input.read(1))
                 # The internal bytes are in the range [-128, 127].
@@ -30,12 +35,12 @@ def eval_program(program, index, memory, input=None, output=None):
                 if memory[index] > 127:
                     memory[index] -= 256
 
-        elif command == '[':
+        elif command == '[' or command == ord('['):
             # "[" jumps past the matching "[" if the current cell is 0.
             if memory[index] == 0:
                     program_index = brace_pairs[program_index]
 
-        elif command == ']':
+        elif command == ']' or command == ord(']'):
             # "]" jumps back to the matching "[" if the current cell is NOT 0
             if memory[index] != 0:
                 program_index = brace_pairs[program_index]
@@ -84,15 +89,21 @@ def get_brace_matches(program):
 
 def eval_file(filename, index, memory, input=None, output=None):
     if filename == '-':
-        program = sys.stdin.read().encode('utf8').split('!')
-        input = io.BytesIO(b'!'.join(program[1:]))
+        program = sys.stdin.read()
+        if not isinstance(program, bytes):
+            program = program.encode('utf8')
+        program = program.split(b'!')
+        in_stream = io.BytesIO(b'!'.join(program[1:]))
         program = program[0]
     else:
         with open(filename, 'r') as f:
             program = f.read()
-        input = sys.stdin
+        try:
+            in_stream = sys.stdin.buffer  # Python 3
+        except AttributeError:
+            in_stream = sys.stdin  # Python 2
 
-    return eval_program(program, index, memory, input, output)
+    return eval_program(program, index, memory, in_stream, output)
 
 
 def main(args):
