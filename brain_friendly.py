@@ -107,6 +107,48 @@ def eval_file(filename, index, memory, input=None, output=None):
         return eval_program(program, index, memory, input, output)
 
 
+def bf_generator_no_output(length):
+    # A program array stores a program numerically
+    # ex: [0, 1, 2, 3, 4, 5] is "[]><-+"
+    program_array = [0] * length
+
+    def array_to_program(array):
+        program = ""
+        for number in array:
+            program += {
+                0: '+',
+                1: '-',
+                2: '>',
+                3: '<',
+                4: '[',
+                5: ']'
+            }[number]
+        return program
+
+    def increment(array):
+        new_array = array
+        carry_flag = True
+        for index, value in enumerate(reversed(array)):
+            if carry_flag:
+                new_value = array[index] + 1
+                new_array[index] = new_value % 6
+                carry_flag = new_value == 6
+        return new_array
+
+    while True:
+        program = array_to_program(program_array)
+        try:
+            get_brace_matches(program) # Throws ValueError if not a valid BF program
+            yield program
+        except ValueError:
+            pass
+        
+        program_array = increment(program_array)
+        if program_array == [0]*length:
+            break
+    raise StopIteration
+
+
 def random_bf_no_output(length):
     loop_depth = 0
     program = ""
@@ -135,5 +177,16 @@ if __name__ == '__main__':
     except AttributeError:
         output = sys.stdout  # Python 2
     # eval_file(filename, bf_index, bf_memory, output=output)
-    eval_program("-[>-[>-[-[>+<-]<[>+<-]<[>+<-]>>>]<-]<-]", bf_index, [0]*10, output=output)
+    #eval_program("-[>-[>-[-[>+<-]<[>+<-]<[>+<-]>>>]<-]<-]", bf_index, [0]*10, output=output)
+    generator = bf_generator_no_output(10)
+    i = 0
+    for program in generator:
+
+        print(program)
+        i += 1
+    print(i)
+        #program = random_bf_no_output(4)
+        #print(program)
+        #eval_program(program, bf_index, [0]*5, output=output, failout=10)
+
 
