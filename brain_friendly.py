@@ -1,5 +1,6 @@
 import sys
 import io
+import random
 # The input BF program.
 bf_program_string = '[][]'
 # Current pointer location.
@@ -104,6 +105,27 @@ def eval_file(filename, index, memory, input=None, output=None):
     with open(filename, 'r') as f:
         program = f.read()
         return eval_program(program, index, memory, input, output)
+
+
+def random_bf_no_output(length):
+    loop_depth = 0
+    program = ""
+    instruction_list = ['+', '-', '>', '<', '+', '-', '>', '<', '[', ']']
+    for i in range(0, length):
+        instruction = random.choice(instruction_list)
+        # Don't emit ] if no matching [
+        if loop_depth <= 0 and instruction == ']':
+            instruction = '['
+
+        if instruction == '[':
+            loop_depth += 1
+        elif instruction == ']':
+            loop_depth -= 1
+        program += instruction
+    for i in range(0, loop_depth):
+        program += ']'
+    return program
+
 
 
 if __name__ == '__main__':
