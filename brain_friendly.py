@@ -76,9 +76,9 @@ def get_brace_matches(program):
     brace_stack = []
 
     for index, instruction in enumerate(program):
-        if instruction == '[':
+        if instruction == '[' or instruction == ord('['):
             brace_stack.append(index)
-        elif instruction == ']':
+        elif instruction == ']' or instruction == ord(']'):
             if not brace_stack:  # Sanity check
                 raise ValueError("Malformed BF program (too many \"]\"s)")
             left_index = brace_stack.pop()

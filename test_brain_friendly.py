@@ -38,6 +38,7 @@ def test_right_expands_buffer():
     assert eval_program('>>>+', 0, [0]) == [0, 0, 0, 1]
     assert eval_program('>>><+', 0, [0]) == [0, 0, 1, 0]
 
+
 # Tests for '[' and ']'
 def test_trivial_loops():
     # Since the current cell is zero.
