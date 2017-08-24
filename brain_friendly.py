@@ -8,7 +8,7 @@ bf_index = 0
 bf_memory = [0]*30000
 
 
-def eval_program(program, index, memory, input=None, output=None):
+def eval_program(program, index, memory, input=None, output=None, failout=None):
     steps = 0
     program_index = 0
     # Stack for "[" and "]" commands.
@@ -54,6 +54,10 @@ def eval_program(program, index, memory, input=None, output=None):
         program_index += 1  # Next command
         steps += 1
         print("({}) {}: {}".format(command, steps, memory))
+
+        if failout is not None and steps > failout:
+            print("FAILOUT: {}", failout)
+            break
     return memory
 
 
