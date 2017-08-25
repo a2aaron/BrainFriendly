@@ -20,6 +20,7 @@ def eval_program(program, index, memory, input=None, output=None, failout=None):
     program_index = 0
     # Stack for "[" and "]" commands.
     brace_pairs = get_brace_matches(program)
+    did_fail = False
     while program_index < len(program):
         command = program[program_index]
         if command == '+' or command == ord('+'):
@@ -60,11 +61,15 @@ def eval_program(program, index, memory, input=None, output=None, failout=None):
                 program_index = brace_pairs[program_index]
         program_index += 1  # Next command
         steps += 1
-        # print("({}) {}: {}".format(command, steps, memory))
+        print("({}) {}: {}".format(command, steps, memory))
 
         if failout is not None and steps > failout:
-            print("FAILOUT: {}", failout)
+            did_fail = True
             break
+    if did_fail:
+        print("{}: FAILOUT".format(program))
+    else:
+        print("{}: {}".format(program, steps))
     return memory
 
 
@@ -203,7 +208,9 @@ def random_bf_no_output(length):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
-
+    # main(sys.argv)
+    # for program in bf_generator_no_output(6):
+        # eval_program(program, 0, [0]*10, input=None, output=None, failout=1000000)
+    eval_program("+[><+]", 0, [0]*10, input=None, output=None, failout=1000000)
 
 __version__ = '0.1.0'
