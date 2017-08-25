@@ -128,3 +128,5 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
+
+__version__ = '0.1.0'
